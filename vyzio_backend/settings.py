@@ -14,11 +14,7 @@ SECRET_KEY = 'django-insecure-cgy*n&2z-rx$@2+u==k_ft=99!fjwilg321dcg@ruw*h*csf=z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
-
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
@@ -179,7 +175,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 # CORS Allowed Origins (local, LocalTunnel, production)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",                        
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
 ]
 
 # Allowed Hosts for Django (backend routing whitelist)
@@ -204,7 +201,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',  # Or other permissions as needed
+        'rest_framework.permissions.AllowAny',  
     ),
     'DEFAULT_PARSER_CLASSES': (
     'rest_framework.parsers.JSONParser',

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from './constants';
 
 function App() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch('/api/homepage/')
+    fetch(`${API_BASE_URL}/api/homepage/`)
       .then((response) => response.json())
-      .then((data) => setData(data));
+      .then((data) => setData(data))
+      .catch(err => console.error("Failed to fetch:", err));
   }, []);
 
   return (

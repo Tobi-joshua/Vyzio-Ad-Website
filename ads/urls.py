@@ -4,6 +4,5 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from ads import views
 
 urlpatterns = [
-#path('', views.home_page, name='homepage'),
-
+     path('homepage/', views.homepage_data, name='homepage-data'),
 ]

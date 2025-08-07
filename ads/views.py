@@ -57,3 +57,16 @@ from vyzio_backend import settings
 from .models import *
 from .serializers import *
 from .tasks import *
+from django.http import JsonResponse
+
+User = get_user_model()
+
+
+
+
+
+def homepage_data(request):
+    return JsonResponse({
+        "message": "Welcome to Vyzio Ads!",
+        "status": "success"
+    })

@@ -289,43 +289,50 @@ export default function VyzionHomePageAppBar() {
             )}
 
             {/* Auth buttons */}
-            <Box
-              sx={{
-                display: "flex",
-                gap: { xs: 1, sm: 2 },
-                flexWrap: "nowrap",
-              }}
-            >
-              <Button
-                onClick={() => navigate("/login")}
-                variant="outlined"
-                sx={{
-                  textTransform: "none",
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  borderRadius: 2,
-                  fontWeight: 400,
-                  whiteSpace: "nowrap",
-                  "&:hover": { bgcolor: "#34c274", color: "#fff" },
-                }}
-              >
-                Post An Ad
-              </Button>
-              <Button
-                onClick={() => navigate("/login")}
-                variant="contained"
-                sx={{
-                  textTransform: "none",
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  borderRadius: 2,
-                  bgcolor: "primary.main",
-                  fontWeight: 400,
-                  whiteSpace: "nowrap",
-                  "&:hover": { bgcolor: "#2e7d32" },
-                }}
-              >
-                Become An Advertiser
-              </Button>
-            </Box>
+           <Box
+  sx={{
+    display: 'flex',
+    gap: { xs: 1, sm: 2 },
+    flexWrap: 'nowrap',
+    overflowX: 'auto',
+  }}
+>
+  <Button
+    onClick={() => navigate("/login")}
+    variant="outlined"
+    sx={{
+      textTransform: 'none',
+      fontSize: { xs: '0.7rem', sm: '0.875rem' }, 
+      borderRadius: 2,
+      fontWeight: 400,
+      whiteSpace: 'nowrap',
+      flexShrink: 1,
+      minWidth: 'auto',
+      px: { xs: 1, sm: 2 }, 
+      '&:hover': { bgcolor: '#34c274', color: '#fff' },
+    }}
+  >
+    Post An Ad
+  </Button>
+  <Button
+    onClick={() => navigate("/login")}
+    variant="contained"
+    sx={{
+      textTransform: 'none',
+      fontSize: { xs: '0.7rem', sm: '0.875rem' },
+      borderRadius: 2,
+      bgcolor: 'primary.main',
+      fontWeight: 400,
+      whiteSpace: 'nowrap',
+      flexShrink: 1,
+      minWidth: 'auto',
+      px: { xs: 1, sm: 2 },
+      '&:hover': { bgcolor: '#2e7d32' },
+    }}
+  >
+    Become An Advertiser
+  </Button>
+</Box>
           </Toolbar>
         </Container>
       </AppBar>

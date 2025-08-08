@@ -33,7 +33,6 @@ const heroImages = [
 
 const VyzioHomePageHeroSection = () => {
   const [currentImage, setCurrentImage] = useState(0);
-  const [fadeIn, setFadeIn] = useState(true);
   const theme = useTheme();
 
   // Media queries for breakpoints
@@ -49,6 +48,7 @@ const VyzioHomePageHeroSection = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+   const [fadeOut, setFadeOut] = useState(false);
 
   // Fetch all active ads for search suggestions
   useEffect(() => {
@@ -97,16 +97,17 @@ const VyzioHomePageHeroSection = () => {
   };
 
   // Hero image slideshow
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFadeIn(false);
-      setTimeout(() => {
-        setCurrentImage(prev => (prev + 1) % heroImages.length);
-        setFadeIn(true);
-      }, 1000);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
+useEffect(() => {
+  const interval = setInterval(() => {
+    setFadeOut(true); 
+    setTimeout(() => {
+      setCurrentImage(prev => (prev + 1) % heroImages.length);
+      setFadeOut(false); 
+    }, 1000); 
+  }, 60000);
+  return () => clearInterval(interval);
+}, []);
+
 
   // Animations on button clicks
   const handlePostAdClick = (event) => {
@@ -160,245 +161,260 @@ const VyzioHomePageHeroSection = () => {
 
   return (
   <Box
+    sx={{
+      position: 'relative',
+      height: isXs ? 460 : isSm ? 500 : 550,
+      overflow: 'visible',
+      mx: 'auto',
+    }}
+  >
+    {/* Current Image */}
+    <Box
+      component="img"
+      src={heroImages[currentImage]}
+      alt="Current"
+      sx={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        opacity: fadeOut ? 0 : 1,
+        transition: 'opacity 1s ease-in-out',
+        zIndex: 1,
+        filter: 'brightness(0.5)',
+      }}
+    />
+
+    {/* Next Image */}
+    <Box
+      component="img"
+      src={heroImages[(currentImage + 1) % heroImages.length]}
+      alt="Next"
+      sx={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        opacity: fadeOut ? 1 : 0,
+        transition: 'opacity 1s ease-in-out',
+        zIndex: 0,
+        filter: 'brightness(0.5)',
+      }}
+    />
+
+    {/* Overlay Content */}
+    <Box
       sx={{
         position: 'relative',
-        height: isXs ? 460 : isSm ? 500 : 550,
-        overflow: 'visible',
-        mx: 'auto',
+        zIndex: 2,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        px: 2,
       }}
     >
-      {/* Background Image with Fade */}
-      <Fade in={fadeIn} timeout={500}>
-        <Box
-          component="img"
-          src={heroImages[currentImage]}
-          alt="Vyzio Ads Hero"
+      <Typography
+        variant={isXs ? 'h6' : isSm ? 'h5' : 'h4'}
+        fontWeight={700}
+        color="#fff"
+        sx={{ mb: 1 }}
+      >
+        POST & TRACK ADS EASILY WITH VYZIO
+      </Typography>
+
+      <Typography
+        variant="body1"
+        color="#fff"
+        sx={{
+          maxWidth: 600,
+          mb: 3,
+          fontSize: isSm ? '0.9rem' : '1rem',
+        }}
+      >
+        Browse ads by category, city, or special features — all in one place.
+      </Typography>
+
+      {/* Buttons */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'nowrap',
+          gap: 1,
+          mb: 5,
+          mr: -1,
+          overflowX: 'auto',
+          scrollbarWidth: 'thin',
+          WebkitOverflowScrolling: 'touch',
+          '&::-webkit-scrollbar': {
+            height: '6px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            borderRadius: '3px',
+          },
+        }}
+      >
+        <Button
+          variant="contained"
+          startIcon={<PostAddIcon />}
+          onClick={handlePostAdClick}
           sx={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center',
-            filter: 'brightness(0.5)',
+            backgroundColor: '#1E88E5',
+            color: '#fff',
+            px: 2,
+            py: 1,
+            borderRadius: 999,
+            fontWeight: 'bold',
+            fontSize: isXs ? '0.7rem' : '0.85rem',
+            textTransform: 'none',
+            flexShrink: 1,
+            minWidth: 'auto',
+            whiteSpace: 'nowrap',
+            '&:hover': { backgroundColor: '#1565C0' },
+          }}
+        >
+          POST AN AD
+        </Button>
+
+        <Button
+          variant="contained"
+          startIcon={<LocalOfferIcon />}
+          onClick={handleBrowseAdsClick}
+          sx={{
+            backgroundColor: '#43A047',
+            color: '#fff',
+            px: 2,
+            py: 1,
+            borderRadius: 999,
+            fontWeight: 'bold',
+            fontSize: isXs ? '0.7rem' : '0.85rem',
+            textTransform: 'none',
+            flexShrink: 1,
+            minWidth: 'auto',
+            whiteSpace: 'nowrap',
+            '&:hover': { backgroundColor: '#2E7D32' },
+          }}
+        >
+          BROWSE ADS
+        </Button>
+      </Box>
+
+      {/* Search Toolbar */}
+   
+        <Toolbar
+          sx={{
             position: 'absolute',
-            top: -8,
+            bottom: 70,
             left: 0,
-            zIndex: 1,
+            right: 0,
+            mx: 'auto',
+            width: '100%',
+            maxWidth: 700,
+            justifyContent: 'center',
+            px: 2,
+            zIndex: 3,
+          }}
+        >
+          <Box sx={{ position: 'relative', width: '100%' }} ref={boxRef}>
+            <SearchContainer sx={{ width: '100%' }}>
+              <StyledInputBase
+                placeholder="Search ads by title, category, city..."
+                inputProps={{ 'aria-label': 'search' }}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                sx={{ fontSize: '1rem', px: 2 }}
+              />
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+            </SearchContainer>
+
+            {showSuggestions && (
+              <Paper
+                sx={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  width: '100%',
+                  mt: 1,
+                  maxHeight: 300,
+                  overflowY: 'auto',
+                  zIndex: 1300,
+                  boxShadow: 3,
+                }}
+              >
+                <List>
+                  {results.length === 0 ? (
+                    <ListItem>
+                      <ListItemText primary="No results found" />
+                    </ListItem>
+                  ) : (
+                    results.map(({ id, title }) => (
+                      <ListItem key={id} disablePadding>
+                        <ListItemButton onClick={() => handleNavigate(id)}>
+                          <ListItemText primary={title} />
+                        </ListItemButton>
+                      </ListItem>
+                    ))
+                  )}
+                </List>
+                <Divider />
+                <Box sx={{ textAlign: 'center', py: 1 }}>
+                  <Typography
+                    variant="body2"
+                    color="primary"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      navigate('/ads');
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    View all ads
+                  </Typography>
+                </Box>
+              </Paper>
+            )}
+          </Box>
+        </Toolbar>
+    
+    </Box>
+
+    {/* Dot Indicators */}
+    <Box
+      sx={{
+        position: 'absolute',
+        bottom: 16,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        gap: 1,
+        zIndex: 2,
+      }}
+    >
+      {heroImages.map((_, index) => (
+        <Box
+          key={index}
+          sx={{
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            backgroundColor: currentImage === index ? '#fff' : '#ccc',
+            transition: 'background-color 0.3s',
           }}
         />
-      </Fade>
-
-      {/* Overlay Content */}
-      <Box
-        sx={{
-          position: 'relative',
-          zIndex: 2,
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          textAlign: 'center',
-          px: 2,
-        }}
-      >
-        <Typography
-          variant={isXs ? 'h6' : isSm ? 'h5' : 'h4'}
-          fontWeight={700}
-          color="#fff"
-          sx={{ mb: 1 }}
-        >
-          POST & TRACK ADS EASILY WITH VYZIO
-        </Typography>
-
-        <Typography
-          variant="body1"
-          color="#fff"
-          sx={{
-            maxWidth: 600,
-            mb: 3,
-            fontSize: isSm ? '0.9rem' : '1rem',
-          }}
-        >
-          Browse ads by category, city, or special features — all in one place.
-        </Typography>
-
-        {/* Buttons */}
-     <Box
-  sx={{
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'nowrap',
-    gap: 1,
-    mb: 5,
-    mr: -1,
-    overflowX: 'auto',
-    scrollbarWidth: 'thin',
-    WebkitOverflowScrolling: 'touch',
-    '&::-webkit-scrollbar': { height: '6px' },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: 'rgba(0,0,0,0.2)',
-      borderRadius: '3px',
-    },
-  }}
->
-  <Button
-    variant="contained"
-    startIcon={<PostAddIcon />}
-    onClick={handlePostAdClick}
-    sx={{
-      display: { xs: 'none', sm: 'inline-flex' }, 
-      backgroundColor: '#1E88E5',
-      color: '#fff',
-      px: 2,
-      py: 1,
-      borderRadius: 999,
-      fontWeight: 'bold',
-      fontSize: isXs ? '0.7rem' : '0.85rem',
-      textTransform: 'none',
-      whiteSpace: 'nowrap',
-      flexShrink: 1,
-      minWidth: 'auto',
-      '&:hover': { backgroundColor: '#1565C0' },
-    }}
-  >
-    POST AN AD
-  </Button>
-
-  <Button
-    variant="contained"
-    startIcon={<LocalOfferIcon />}
-    onClick={handleBrowseAdsClick}
-    sx={{
-      backgroundColor: '#43A047',
-      color: '#fff',
-      px: 2,
-      py: 1,
-      borderRadius: 999,
-      fontWeight: 'bold',
-      fontSize: isXs ? '0.7rem' : '0.85rem',
-      textTransform: 'none',
-      whiteSpace: 'nowrap',
-      flexShrink: 1,
-      minWidth: 'auto',
-      display: 'inline-flex', 
-      '&:hover': { backgroundColor: '#2E7D32' },
-    }}
-  >
-    BROWSE ADS
-  </Button>
-</Box>
-
-
-        {/* Search Toolbar */}
-        {!isSm && (
-          <Toolbar
-            sx={{
-              position: 'absolute',
-              bottom: 70,
-              left: 0,
-              right: 0,
-              mx: 'auto',
-              width: '100%',
-              maxWidth: 700,
-              justifyContent: 'center',
-              px: 2,
-              zIndex: 3,
-            }}
-          >
-            <Box
-              sx={{ position: 'relative', width: '100%' }}
-              ref={boxRef}
-            >
-              <SearchContainer sx={{ width: '100%' }}>
-                <StyledInputBase
-                  placeholder="Search ads by title, category, city..."
-                  inputProps={{ 'aria-label': 'search' }}
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                  sx={{ fontSize: '1rem', px: 2 }}
-                />
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-              </SearchContainer>
-
-              {showSuggestions && (
-                <Paper
-                  sx={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    width: '100%',
-                    mt: 1,
-                    maxHeight: 300,
-                    overflowY: 'auto',
-                    zIndex: 1300,
-                    boxShadow: 3,
-                  }}
-                >
-                  <List>
-                    {results.length === 0 ? (
-                      <ListItem>
-                        <ListItemText primary="No results found" />
-                      </ListItem>
-                    ) : (
-                      results.map(({ id, title }) => (
-                        <ListItem key={id} disablePadding>
-                          <ListItemButton onClick={() => handleNavigate(id)}>
-                            <ListItemText primary={title} />
-                          </ListItemButton>
-                        </ListItem>
-                      ))
-                    )}
-                  </List>
-                  <Divider />
-                  <Box sx={{ textAlign: 'center', py: 1 }}>
-                    <Typography
-                      variant="body2"
-                      color="primary"
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        navigate('/ads');
-                        setShowSuggestions(false);
-                      }}
-                    >
-                      View all ads
-                    </Typography>
-                  </Box>
-                </Paper>
-              )}
-            </Box>
-          </Toolbar>
-        )}
-      </Box>
-
-      {/* Dot Indicators */}
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 16,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          gap: 1,
-          zIndex: 2,
-        }}
-      >
-        {heroImages.map((_, index) => (
-          <Box
-            key={index}
-            sx={{
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              backgroundColor: currentImage === index ? '#fff' : '#ccc',
-              transition: 'background-color 0.3s',
-            }}
-          />
-        ))}
-      </Box>
+      ))}
     </Box>
-  );
+  </Box>
+);
+
 };
 
 export default VyzioHomePageHeroSection;

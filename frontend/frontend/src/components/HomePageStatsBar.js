@@ -15,7 +15,7 @@ import { API_BASE_URL } from '../constants';
 
 const HomePageStatsBar = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
   const [stats, setStats] = useState({
     total_ads: 0,
@@ -89,8 +89,9 @@ return (
             sx={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent:'center',
               gap: 1.5,
-              minWidth: isMobile ? '30%' : 'auto',  
+              minWidth: isMobile ? '50%' : 'auto',  
               flexGrow: 1,
             }}
           >

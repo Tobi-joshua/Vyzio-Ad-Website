@@ -116,13 +116,6 @@ def ad_detail(request, id):
     return Response(serializer.data)
 
 
-
-@api_view(['GET'])
-def category_list(request):
-    categories = Category.objects.all()
-    serializer = CategorySerializer(categories, many=True)
-    return Response(serializer.data)
-
 @api_view(['POST'])
 def category_create(request):
     is_many = isinstance(request.data, list)
@@ -137,3 +130,22 @@ def category_create(request):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+@api_view(['GET'])
+def category_list(request):
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
+    return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+def category_ads_list(request, pk):
+    try:
+        ads = Ad.objects.filter(category_id=pk, is_active=True).order_by('-created_at')
+    except Category.DoesNotExist:
+        return Response({'detail': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = AdSerializer(ads, many=True)
+    return Response(serializer.data)

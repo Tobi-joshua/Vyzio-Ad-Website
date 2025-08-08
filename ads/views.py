@@ -87,3 +87,24 @@ def homepage_data(request):
         "categories": categories_data,
         "stats": stats,
     })
+
+
+@api_view(['GET'])
+def ads_list(request):
+    """
+    Retrieve all active ads for Vyzion Ads.
+    """
+    ads = Ad.objects.filter(is_active=True).order_by('-created_at')
+    serializer = AdSerializer(ads, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def ad_detail(request, id):
+    try:
+        ad = Ad.objects.get(pk=id, is_active=True)
+    except Ad.DoesNotExist:
+        return Response({"detail": "Ad not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = AdSerializer(ad)
+    return Response(serializer.data)

@@ -5,4 +5,6 @@ from ads import views
 
 urlpatterns = [
      path('homepage/', views.homepage_data, name='homepage-data'),
+     path('ads/', views.ads_list, name='ads-list'),
+     path('ads/<int:id>/', views.ad_detail, name='ad-detail'),
 ]

@@ -7,4 +7,6 @@ urlpatterns = [
      path('homepage/', views.homepage_data, name='homepage-data'),
      path('ads/', views.ads_list, name='ads-list'),
      path('ads/<int:id>/', views.ad_detail, name='ad-detail'),
+     path('categories/', views.category_list, name='category-list'),        
+    path('categories/create/', views.category_create, name='category-create'),  
 ]

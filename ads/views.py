@@ -51,6 +51,7 @@ from drf_yasg.utils import swagger_auto_schema
 from google.oauth2 import id_token
 from google.cloud import tasks_v2
 from google.auth.transport import requests as google_requests
+from django.db.models import Q
 
 # Project Specific
 from vyzio_backend import settings
@@ -58,10 +59,11 @@ from .models import *
 from .serializers import *
 from .tasks import *
 from .serializers import *
+from rest_framework import generics, permissions
+
 
 
 User = get_user_model()
-
 
 
 @api_view(["GET"])
@@ -78,7 +80,10 @@ def homepage_data(request):
     stats = {
         "total_ads": Ad.objects.count(),
         "total_users": User.objects.count(),
-        "active_ads": Ad.objects.filter(is_active=True).count()
+        "active_ads": Ad.objects.filter(is_active=True).count(),
+        "total_advertisers": User.objects.filter(is_advertiser=True).count(),
+        "confirmed_payments": Payment.objects.filter(status='confirmed').count(),
+        "total_revenue": Payment.objects.filter(status='confirmed').aggregate(total=models.Sum('amount'))['total'] or 0,
     }
 
     return Response({
@@ -87,6 +92,7 @@ def homepage_data(request):
         "categories": categories_data,
         "stats": stats,
     })
+
 
 
 @api_view(['GET'])
@@ -108,3 +114,26 @@ def ad_detail(request, id):
 
     serializer = AdSerializer(ad)
     return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+def category_list(request):
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def category_create(request):
+    is_many = isinstance(request.data, list)
+    if is_many:
+        serializer = BulkCategorySerializer(data=request.data, many=True)
+    else:
+        serializer = CategorySerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

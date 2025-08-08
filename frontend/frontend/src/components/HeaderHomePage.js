@@ -25,7 +25,7 @@ import { API_BASE_URL } from '../constants';
 
 
 const heroImages = [
-  'https://ik.imagekit.io/ooiob6xdv/20250808_0945_Professional%20Teamwork_simple_compose_01k2594ratemytd66411730qkz.png?updatedAt=1754671853547',
+  'https://ik.imagekit.io/ooiob6xdv/20250808_1208_Professional%20Laptop%20Collaboration_simple_compose_01k25ha7qmezabek6ed9zspv69.png?updatedAt=1754683292608',
   'https://ik.imagekit.io/ooiob6xdv/20250808_1126_Calming%20Infographic%20Header_simple_compose_01k25ewce2e0m84m4vv4r8smpp.png?updatedAt=1754678104949',
   'https://ik.imagekit.io/ooiob6xdv/20250808_1126_Calming%20Infographic%20Header_simple_compose_01k25ewce3eq9sq8wj9p3652sr.png?updatedAt=1754678128576'
 ];
@@ -159,7 +159,7 @@ const VyzioHomePageHeroSection = () => {
   });
 
   return (
-    <Box
+  <Box
       sx={{
         position: 'relative',
         height: isXs ? 460 : isSm ? 500 : 550,
@@ -180,7 +180,7 @@ const VyzioHomePageHeroSection = () => {
             objectPosition: 'center',
             filter: 'brightness(0.5)',
             position: 'absolute',
-            top: -5,
+            top: -8,
             left: 0,
             zIndex: 1,
           }}
@@ -207,7 +207,7 @@ const VyzioHomePageHeroSection = () => {
           color="#fff"
           sx={{ mb: 1 }}
         >
-          POST & TRACK ADS EASILY WITH VYZION
+          POST & TRACK ADS EASILY WITH VYZIO
         </Typography>
 
         <Typography
@@ -223,52 +223,71 @@ const VyzioHomePageHeroSection = () => {
         </Typography>
 
         {/* Buttons */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: isSm ? 'column' : 'row',
-            gap: 2,
-            mb: 5,
-          }}
-        >
-          <Button
-            variant="contained"
-            startIcon={<PostAddIcon />}
-            onClick={handlePostAdClick}
-            sx={{
-              backgroundColor: '#1E88E5',
-              color: '#fff',
-              px: 3,
-              py: 1,
-              borderRadius: 999,
-              fontWeight: 'bold',
-              fontSize: isXs ? '0.75rem' : '0.95rem',
-              textTransform: 'none',
-              '&:hover': { backgroundColor: '#1565C0' },
-            }}
-          >
-            POST AN AD
-          </Button>
+     <Box
+  sx={{
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    gap: 1,
+    mb: 5,
+    mr: -1,
+    overflowX: 'auto',
+    scrollbarWidth: 'thin',
+    WebkitOverflowScrolling: 'touch',
+    '&::-webkit-scrollbar': { height: '6px' },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,0.2)',
+      borderRadius: '3px',
+    },
+  }}
+>
+  <Button
+    variant="contained"
+    startIcon={<PostAddIcon />}
+    onClick={handlePostAdClick}
+    sx={{
+      display: { xs: 'none', sm: 'inline-flex' }, 
+      backgroundColor: '#1E88E5',
+      color: '#fff',
+      px: 2,
+      py: 1,
+      borderRadius: 999,
+      fontWeight: 'bold',
+      fontSize: isXs ? '0.7rem' : '0.85rem',
+      textTransform: 'none',
+      whiteSpace: 'nowrap',
+      flexShrink: 1,
+      minWidth: 'auto',
+      '&:hover': { backgroundColor: '#1565C0' },
+    }}
+  >
+    POST AN AD
+  </Button>
 
-          <Button
-            variant="contained"
-            startIcon={<LocalOfferIcon />}
-            onClick={handleBrowseAdsClick}
-            sx={{
-              backgroundColor: '#43A047',
-              color: '#fff',
-              px: 3,
-              py: 1,
-              borderRadius: 999,
-              fontWeight: 'bold',
-              fontSize: isXs ? '0.75rem' : '0.95rem',
-              textTransform: 'none',
-              '&:hover': { backgroundColor: '#2E7D32' },
-            }}
-          >
-            BROWSE ADS
-          </Button>
-        </Box>
+  <Button
+    variant="contained"
+    startIcon={<LocalOfferIcon />}
+    onClick={handleBrowseAdsClick}
+    sx={{
+      backgroundColor: '#43A047',
+      color: '#fff',
+      px: 2,
+      py: 1,
+      borderRadius: 999,
+      fontWeight: 'bold',
+      fontSize: isXs ? '0.7rem' : '0.85rem',
+      textTransform: 'none',
+      whiteSpace: 'nowrap',
+      flexShrink: 1,
+      minWidth: 'auto',
+      display: 'inline-flex', 
+      '&:hover': { backgroundColor: '#2E7D32' },
+    }}
+  >
+    BROWSE ADS
+  </Button>
+</Box>
+
 
         {/* Search Toolbar */}
         {!isSm && (

@@ -30,6 +30,8 @@ import DataLoader from '../components/DataLoader';
 import VyzionHomePageAppBar from '../components/ResponsiveAppBar';
 import VyzioHomePageHeroSection from '../components/HeaderHomePage'
 import HomePageStatsBar from "../components/HomePageStatsBar";
+import HowItWorksHome from "../components/HowItsWorkHome";
+import ClientReviewsCarousel from "../components/ClientReviewsCarousel";
 
 
 export default function Homepage() {
@@ -60,6 +62,8 @@ export default function Homepage() {
       <VyzionHomePageAppBar/>
      <VyzioHomePageHeroSection/>
      <HomePageStatsBar/>
+     <HowItWorksHome/>
+     <ClientReviewsCarousel/>
 
       
     </Container>

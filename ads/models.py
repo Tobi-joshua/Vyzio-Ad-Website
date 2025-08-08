@@ -81,7 +81,7 @@ class Ad(models.Model):
     description = models.TextField()
     city = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    is_active = models.BooleanField(default=False)  # only active ads show publicly
+    is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -27,11 +27,13 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'ads',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -183,6 +185,7 @@ CORS_ALLOWED_ORIGINS = [
 ALLOWED_HOSTS = [
     "vyzio.pythonanywhere.com",
     "127.0.0.1",
+    "localhost",
 ]
 
 #  CSRF Trusted Origins (required for secure POSTs like login/signup)
@@ -190,6 +193,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",                         # Django dev server
     "https://9e9630710f49.ngrok-free.app",           # LocalTunnel frontend
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 

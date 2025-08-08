@@ -23,3 +23,14 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name', 'icon']
+
+class CategoryListSerializer(serializers.ListSerializer):
+    def create(self, validated_data):
+        categories = [Category(**item) for item in validated_data]
+        return Category.objects.bulk_create(categories)
+
+class BulkCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'icon']
+        list_serializer_class = CategoryListSerializer

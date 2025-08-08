@@ -57,16 +57,37 @@ from vyzio_backend import settings
 from .models import *
 from .serializers import *
 from .tasks import *
-from django.http import JsonResponse
+from .serializers import *
+
 
 User = get_user_model()
 
 
 
-
-
+@api_view(["GET"])
 def homepage_data(request):
-    return JsonResponse({
+    # Featured ads
+    featured_ads = Ad.objects.filter(is_active=True).order_by('-created_at')[:5]
+    featured_ads_data = AdSerializer(featured_ads, many=True).data
+
+    # Categories
+    categories = Category.objects.all()
+    categories_data = CategorySerializer(categories, many=True).data
+
+    # Stats
+    stats = {
+        "total_ads": Ad.objects.count(),
+        "total_users": User.objects.count(),
+        "active_ads": Ad.objects.filter(is_active=True).count()
+    }
+
+    return Response({
         "message": "Welcome to Vyzio Ads!",
-        "status": "success"
+        "featured_ads": featured_ads_data,
+        "categories": categories_data,
+        "stats": stats,
+        "auth": {
+            "login_url": "/login",
+            "signup_url": "/signup"
+        }
     })

@@ -86,8 +86,4 @@ def homepage_data(request):
         "featured_ads": featured_ads_data,
         "categories": categories_data,
         "stats": stats,
-        "auth": {
-            "login_url": "/login",
-            "signup_url": "/signup"
-        }
     })

@@ -28,7 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import party from 'party-js';
 import DataLoader from '../components/DataLoader';
 import VyzionHomePageAppBar from '../components/ResponsiveAppBar';
-import VyzioHomePageHeroSection from '../components/HeaderHomePage'
+import VyzioHomePageHeroSection from '../components/HeaderHomePage';
 import HomePageStatsBar from "../components/HomePageStatsBar";
 import HowItWorksHome from "../components/HowItsWorkHome";
 import ClientReviewsCarousel from "../components/ClientReviewsCarousel";

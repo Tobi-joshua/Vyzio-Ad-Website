@@ -131,15 +131,15 @@ export default function VyzionHomePageAppBar() {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ background: "#fff", boxShadow: 1 }}>
+     <AppBar position="fixed" sx={{ background: 'linear-gradient(to right, #fff, #f7f7f7)', boxShadow: 1 }}>
         <Container maxWidth="xl">
           <Toolbar
             disableGutters
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 1,
+              display: 'flex',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 1, 
             }}
           >
             {/* Branding */}

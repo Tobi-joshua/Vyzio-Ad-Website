@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { useEffect, useState } from 'react';
 import { Box, Toolbar } from '@mui/material';
 
+
 // Pages
 import Homepage from "./pages/Homepage";
 // import SearchResults from "./pages/SearchResults";
@@ -28,14 +29,14 @@ import NotFoundPage from "./NotFound";
 import Footer from "./components/Footer";
 
 function App() {
-
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+
 
 
   return (

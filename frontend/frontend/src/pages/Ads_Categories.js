@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  CircularProgress,
   Container,
   Grid,
   Typography,
@@ -12,36 +11,42 @@ import {
   Avatar,
   useMediaQuery,
   useTheme,
+  TextField,
+  Toolbar,
+  IconButton,
+  InputAdornment
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import CategoryIcon from "@mui/icons-material/Category";
 import { useNavigate } from "react-router-dom";
 import VyzionHomePageAppBar from "../components/ResponsiveAppBar";
 import DataLoader from "../components/DataLoader";
+import BannerImage from "../components/ BannerImage";
 
-// Helper to map icon names from backend to MUI icons
-import HandymanIcon from '@mui/icons-material/Handyman';
-import HomeIcon from '@mui/icons-material/Home';
-import WorkIcon from '@mui/icons-material/Work';
-import SchoolIcon from '@mui/icons-material/School';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
-import DevicesIcon from '@mui/icons-material/Devices';
-import StyleIcon from '@mui/icons-material/Style';
-import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
-import PetsIcon from '@mui/icons-material/Pets';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import GrassIcon from '@mui/icons-material/Grass';
-import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
-import ChildCareIcon from '@mui/icons-material/ChildCare';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
-import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
-import PaletteIcon from '@mui/icons-material/Palette';
-import SmartphoneIcon from '@mui/icons-material/Smartphone';
-import EventIcon from '@mui/icons-material/Event';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+// MUI Icons imports...
+import HandymanIcon from "@mui/icons-material/Handyman";
+import HomeIcon from "@mui/icons-material/Home";
+import WorkIcon from "@mui/icons-material/Work";
+import SchoolIcon from "@mui/icons-material/School";
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import DevicesIcon from "@mui/icons-material/Devices";
+import StyleIcon from "@mui/icons-material/Style";
+import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+import PetsIcon from "@mui/icons-material/Pets";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import GrassIcon from "@mui/icons-material/Grass";
+import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import ChildCareIcon from "@mui/icons-material/ChildCare";
+import RestaurantIcon from "@mui/icons-material/Restaurant";
+import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
+import PaletteIcon from "@mui/icons-material/Palette";
+import SmartphoneIcon from "@mui/icons-material/Smartphone";
+import EventIcon from "@mui/icons-material/Event";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
+import CloseIcon from "@mui/icons-material/Close";
 import { API_BASE_URL } from "../constants";
 
-// Map backend icon string to MUI icon component
 const iconMap = {
   handyman: HandymanIcon,
   home: HomeIcon,
@@ -68,12 +73,12 @@ const iconMap = {
 export default function AdsCategories() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [search, setSearch] = useState("");
   const theme = useTheme();
-  const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const navigate = useNavigate();
 
-  // Fetch categories on mount
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/categories/`)
       .then((res) => {
@@ -92,77 +97,202 @@ export default function AdsCategories() {
 
   if (loading) return <DataLoader visible={true} />;
 
+  // Filter categories by search text (case insensitive)
+  const filteredCategories = categories.filter((cat) =>
+    cat.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        backgroundColor: "#f5f5f5",
+      }}
+    >
       <VyzionHomePageAppBar />
+      <BannerImage />
+      <Box sx={{ width: "100%", backgroundColor: "#ffffff" }}>
+        <Box
+          sx={{
+            width: {
+              xs: "85%", // mobile
+              sm: "80%", // small tablets
+              md: "95%", // medium screens
+              lg: "100%", // large screens
+            },
+            maxWidth: "1000px",
+            mx: "auto",
+            p: 3,
+            borderRadius: 2,
+            boxShadow: 4,
+            backgroundColor: "#feffffff",
+            border: "1px solid #e0e0e0",
+            mb: 3,
+            mt: -4,
+            position: "relative",
+            zIndex: 2,
+          }}
+        >
 
-      <Typography variant="h4" fontWeight="bold" gutterBottom mt={3}>
-      Ads  Categories
-      </Typography>
+ <Container maxWidth="md" sx={{ my: 4 }}>
+        {/* Title */}
+        <Typography
+          variant={isMobile ? "h4" : "h3"}
+          fontWeight={700}
+          gutterBottom
+          sx={{ color: "#003366", fontFamily: "'Roboto Slab', serif" }}
+        >
+          Ads Categories
+        </Typography>
 
-      <Grid container spacing={3}>
-        {categories.map(({ id, name, icon }) => {
-          const IconComponent = iconMap[icon] || CategoryIcon;
-          return (
-            <Grid
-              item
-              key={id}
-              xs={12}
-              sm={6}
-              md={4}
-              onClick={() => navigate(`${API_BASE_URL}/categories/${id}/ads`)}
-              sx={{ cursor: "pointer" }}
-            >
-              <Card
-                variant="outlined"
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  p: 3,
-                  height: "100%",
-                  transition: "transform 0.2s",
-                  "&:hover": { boxShadow: 6, transform: "scale(1.03)" },
-                }}
-              >
-                <Avatar
-                  sx={{
-                    bgcolor: theme.palette.primary.main,
-                    width: 56,
-                    height: 56,
-                    mb: 2,
-                  }}
-                >
-                  <IconComponent fontSize="large" />
-                </Avatar>
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    component="div"
-                    align="center"
-                    fontWeight={600}
-                  >
-                    {name}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
+        {/* Search Bar */}
+        <Box
+          sx={{
+            mb: 3,
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid #ccc",
+            borderRadius: "50px",
+            backgroundColor: "#fff",
+            boxShadow: 1,
+            height: isMobile ? 40 : 48,
+            px: 2,
+            maxWidth: 600,
+            mx: "auto",
+          }}
+        >
+          <TextField
+            variant="standard"
+            placeholder="Search categories..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            fullWidth
+            InputProps={{
+              disableUnderline: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: "#6A1B9A" }} />
+                </InputAdornment>
+              ),
+              endAdornment: search && (
+                <InputAdornment position="end">
+                  <IconButton
                     size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`${API_BASE_URL}/categories/${id}/ads`);
-                    }}
-                    variant="contained"
-                    fullWidth
+                    onClick={() => setSearch("")}
+                    aria-label="clear search"
                   >
-                    View Ads
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          );
-        })}
+                    <CloseIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              sx: {
+                fontSize: isMobile ? "0.85rem" : "1rem",
+                py: 1,
+              },
+            }}
+          />
+        </Box>
+
+        {/* Categories Grid */}
+        <Grid container spacing={3} justifyContent="center" sx={{ mt: 1 }}>
+  {filteredCategories.length === 0 && (
+    <Typography
+      variant="body1"
+      color="text.secondary"
+      textAlign="center"
+      sx={{ width: "100%", mt: 4 }}
+    >
+      No categories found.
+    </Typography>
+  )}
+
+  {filteredCategories.map(({ id, name, icon }) => {
+    const IconComponent = iconMap[icon] || CategoryIcon;
+    const cardWidth = 280;  // fixed width for every card
+    const cardHeight = 300;
+
+    return (
+      <Grid
+        item
+        key={id}
+        xs="auto"            // width depends on card, not flex grow
+        sx={{ display: "flex", justifyContent: "center" }}
+      >
+        <Card
+          variant="outlined"
+          sx={{
+            width: cardWidth,
+            height: cardHeight,
+            borderRadius: 3,
+            overflow: "hidden",
+            cursor: "pointer",
+            backgroundColor: "#fff",
+            border: "2px solid",
+            borderColor: "#e0e0e0",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            transition: "transform 0.2s ease-in-out, border-color 0.2s ease-in-out",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            "&:hover": {
+              transform: "scale(1.03)",
+              borderColor: "#6A1B9A",
+              boxShadow: "0 8px 20px rgba(106,27,154,0.3)",
+            },
+          }}
+          onClick={() => navigate(`${API_BASE_URL}/categories/${id}/ads`)}
+        >
+          <Avatar
+            sx={{
+              bgcolor: theme.palette.primary.main,
+              width: 64,
+              height: 64,
+              mt: 3,
+              mx: "auto",
+            }}
+          >
+            <IconComponent fontSize="large" />
+          </Avatar>
+
+          <CardContent sx={{ flexGrow: 1, px: 3, pt: 2 }}>
+            <Typography
+              variant="h6"
+              component="div"
+              align="center"
+              fontWeight={700}
+              sx={{
+                overflowWrap: "break-word",
+                wordBreak: "break-word",
+                whiteSpace: "normal",
+              }}
+            >
+              {name}
+            </Typography>
+          </CardContent>
+
+          <CardActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              size="small"
+              variant="contained"
+              fullWidth
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`${API_BASE_URL}/categories/${id}/ads`);
+              }}
+            >
+              View Ads
+            </Button>
+          </CardActions>
+        </Card>
       </Grid>
-    </Container>
+    );
+  })}
+</Grid>
+      </Container>
+      </Box>
+      </Box>
+    </Box>
   );
 }

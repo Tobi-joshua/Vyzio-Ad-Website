@@ -12,4 +12,8 @@ urlpatterns = [
      path('categories/create/', views.category_create, name='category-create'), 
      path('categories/<int:pk>/ads/', views.category_ads_list, name='category-ads-list'),
      path('ads/create/', views.create_ads, name='ad-create'),
+     path('chats/create/', views.create_chat, name='create_chat'),
+     path('messages/send/', views.send_message, name='send_message'),
+     path('messages/', views.get_messages, name='get_messages'),
+     path('messages/<int:pk>/read/', views.mark_as_read, name='mark_as_read'),
 ]

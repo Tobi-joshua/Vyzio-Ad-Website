@@ -182,3 +182,60 @@ def create_ads(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from rest_framework import generics, permissions
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from django.utils import timezone
+from .models import Chat, Message
+from .serializers import ChatSerializer, MessageSerializer
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def create_chat(request):
+    ad_id = request.data.get('ad_id')
+    seller_id = request.data.get('seller_id')
+    chat, created = Chat.objects.get_or_create(
+        ad_id=ad_id,
+        buyer=request.user,
+        seller_id=seller_id
+    )
+    return Response(ChatSerializer(chat).data)
+
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def send_message(request):
+    serializer = MessageSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(sender=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_messages(request):
+    chat_id = request.query_params.get('chat_id')
+    after = request.query_params.get('after')
+
+    messages = Message.objects.filter(chat_id=chat_id).order_by('created_at')
+    if after:
+        messages = messages.filter(created_at__gt=after)
+
+    return Response(MessageSerializer(messages, many=True).data)
+
+
+@api_view(['PATCH'])
+@permission_classes([permissions.IsAuthenticated])
+def mark_as_read(request, pk):
+    try:
+        message = Message.objects.get(pk=pk)
+        if message.sender != request.user:
+            message.is_read = True
+            message.save()
+        return Response({'status': 'marked as read'})
+    except Message.DoesNotExist:
+        return Response({'error': 'Message not found'}, status=404)

@@ -36,12 +36,22 @@ def upload_file_to_imagekit(file_obj, tags):
     }
 
 
-
 class User(AbstractUser):
     is_advertiser = models.BooleanField(default=False)
     phone = models.CharField(max_length=20, blank=True, null=True)
     country = models.CharField(max_length=50, null=True, default='USA', db_index=True)
+    state = models.CharField(max_length=50, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    postal_code = models.CharField(max_length=20, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True, help_text="Format: YYYY-MM-DD", db_index=True)
+    bio = models.TextField(blank=True, null=True, help_text="Short description about the user")
+    is_verified = models.BooleanField(default=False)
+    kyc_verified = models.BooleanField(default=False)
+    website = models.URLField(blank=True, null=True)
+    preferred_currency = models.CharField(max_length=10, blank=True, null=True)
+    last_seen = models.DateTimeField(blank=True, null=True)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)
+
     avatar = models.ImageField(
         upload_to='avatars/',
         default='https://bit.ly/3YwXaHM',
@@ -50,7 +60,7 @@ class User(AbstractUser):
     )
     avatar_url = models.URLField(blank=True, null=True)
 
-    # Override these to avoid reverse accessor clash
+    # Avoid reverse accessor clashes
     groups = models.ManyToManyField(
         Group,
         related_name='custom_user_set',
@@ -72,16 +82,9 @@ class User(AbstractUser):
         return self.username
     
     def save(self, *args, **kwargs):
-        """
-        Only upload to ImageKit when:
-          - new user (no PK), or
-          - no avatar_url yet, or
-          - a real file replaced the default
-        """
         is_new = self.pk is None
         should_upload = False
 
-        # Only consider upload if avatar isn't the default placeholder
         if self.avatar and self.avatar.name != 'https://bit.ly/3YwXaHM':
             if is_new or not self.avatar_url:
                 should_upload = True
@@ -95,9 +98,10 @@ class User(AbstractUser):
 
         if should_upload:
             try:
-                new_url = upload_file_to_imagekit(self.avatar, tags=["user_avatar"])
-                if new_url:
-                    self.avatar_url = new_url
+                result = upload_file_to_imagekit(self.avatar, tags=["user_avatar"])
+                file_url = result.get('file_url')
+                if file_url:
+                    self.avatar_url = file_url
             except Exception as e:
                 print(f"Error uploading avatar to ImageKit: {e}")
 
@@ -105,7 +109,28 @@ class User(AbstractUser):
 
 
 
+class Review(models.Model):
+    reviewed_user = models.ForeignKey('User',
+        on_delete=models.CASCADE,
+        related_name="reviews"
+    )
+    reviewer = models.ForeignKey(
+        'User',
+        on_delete=models.CASCADE,
+        related_name="given_reviews"
+    )
+    ad = models.ForeignKey(
+        'Ad',
+        on_delete=models.CASCADE,
+        related_name="reviews",
+        null=True, blank=True
+    )
+    rating = models.DecimalField(max_digits=3, decimal_places=2)  
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Review for {self.reviewed_user} - {self.rating}"
 
 
 
@@ -118,6 +143,8 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
     
 """ 
 Represents a single ad posted by a user
@@ -139,6 +166,21 @@ class Ad(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     header_image = models.ImageField(upload_to='ads/header/', null=True, blank=True)
     header_image_url = models.URLField(blank=True, null=True)
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('pending', 'Pending Approval'),
+        ('active', 'Active'),
+        ('paused', 'Paused'),
+        ('sold', 'Sold'),
+        ('archived', 'Archived'),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='draft',
+        help_text="Current status of the ad"
+    )
     
     def __str__(self):
         return self.title
@@ -154,17 +196,14 @@ class Ad(models.Model):
         should_upload = False
 
         if self.header_image:
-            # 1) New record or no URL yet ⇒ upload
             if is_new or not self.header_image_url:
                 should_upload = True
             else:
-                # 2) Existing record: compare stored file name vs. current
                 try:
                     orig = Ad.objects.get(pk=self.pk)
                     if orig.header_image.name != self.header_image.name:
                         should_upload = True
                 except Ad.DoesNotExist:
-                    # fallback: upload if something unexpected happened
                     should_upload = True
 
         if should_upload:
@@ -254,3 +293,76 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.amount} - {self.status}"
+
+
+class Chat(models.Model):
+    """
+    Represents a conversation between two users about a specific ad.
+    """
+    ad = models.ForeignKey(
+        Ad,
+        on_delete=models.CASCADE,
+        related_name="chats"
+    )
+    buyer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="buyer_chats"
+    )
+    seller = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="seller_chats"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('ad', 'buyer', 'seller')  # prevent duplicate chat for same ad & users
+
+    def __str__(self):
+        return f"Chat on '{self.ad.title}' between {self.buyer} and {self.seller}"
+
+
+class Message(models.Model):
+    """
+    Individual messages within a Chat.
+    """
+    chat = models.ForeignKey(
+        Chat,
+        on_delete=models.CASCADE,
+        related_name="messages"
+    )
+    sender = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="sent_messages"
+    )
+    text = models.TextField(blank=True)
+    attachment = models.FileField(
+        upload_to="chat_attachments/",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'pdf', 'docx'])]
+    )
+    attachment_url = models.URLField(blank=True, null=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message from {self.sender} in Chat {self.chat.id}"
+
+    def save(self, *args, **kwargs):
+        """
+        If there's an attachment, upload to ImageKit.
+        """
+        if self.attachment:
+            try:
+                result = upload_file_to_imagekit(self.attachment, tags=['chat_attachment'])
+                file_url = result.get('file_url')
+                if file_url:
+                    self.attachment_url = file_url
+            except Exception as e:
+                print(f"Error uploading chat attachment to ImageKit: {e}")
+
+        super().save(*args, **kwargs)

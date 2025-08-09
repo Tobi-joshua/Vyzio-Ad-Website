@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Category, Ad, AdImage, Payment
+from .models import *
 
 
 class AdImageInline(admin.TabularInline):  # or StackedInline for larger form
@@ -39,6 +39,36 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ('user', 'ad', 'amount', 'method', 'status', 'created_at')
     list_filter = ('method', 'status')
     search_fields = ('user__username', 'ad__title')
+
+
+@admin.register(Chat)
+class ChatAdmin(admin.ModelAdmin):
+    list_display = ('id', 'ad', 'buyer', 'seller', 'created_at', 'updated_at')
+    list_filter = ('created_at', 'updated_at')
+    search_fields = ('ad__title', 'buyer__username', 'seller__username')
+    ordering = ('-created_at',)
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'chat', 'sender', 'text_preview', 'is_read', 'created_at')
+    list_filter = ('is_read', 'created_at')
+    search_fields = ('chat__ad__title', 'sender__username', 'text')
+    ordering = ('-created_at',)
+
+    def text_preview(self, obj):
+        return (obj.text[:50] + "...") if obj.text else "(Attachment only)"
+    text_preview.short_description = "Message Preview"
+
+
+
+
+
+
+
+
+
+
 
 
 admin.site.site_header = "Vyzio Ad Admin"

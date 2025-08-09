@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Box,
   Typography,
@@ -11,18 +10,28 @@ import {
   Avatar,
   Grid,
   CircularProgress,
-  IconButton,
   Toolbar,
+  IconButton,
   Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { API_BASE_URL } from "../constants";
 import VyzionHomePageAppBar from "../components/ResponsiveAppBar";
 
+
+
+
+
 const Ads_Details = () => {
-  const { id } = useParams();
+  const {id} = useParams();
   const navigate = useNavigate();
   const [ad, setAd] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/ads/${id}/`)
@@ -54,16 +63,11 @@ const Ads_Details = () => {
   }
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
-      }}
-    >
+  
+<Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
       <VyzionHomePageAppBar />
-      <Container maxWidth="lg" sx={{ py: 4, flexGrow: 1 }}>
+<Container maxWidth="lg" sx={{ py: 4, flexGrow: 1 }}>
+        {/* Top Toolbar */}
         <Toolbar disableGutters sx={{ mb: 2 }}>
           <IconButton
             onClick={() => navigate("/categories")}
@@ -82,23 +86,12 @@ const Ads_Details = () => {
           </Typography>
         </Toolbar>
 
-        {/* Main Header Image */}
-        <Card
-          sx={{
-            mb: 3,
-            borderRadius: 3,
-            overflow: "hidden",
-            boxShadow: 3,
-          }}
-        >
+        {/* Main Image */}
+        <Card sx={{ mb: 3, borderRadius: 3, overflow: "hidden", boxShadow: 3 }}>
           <CardMedia
             component="img"
             height="500"
-            image={
-              ad.header_image_url
-                ? `${ad.header_image_url}`
-                : "https://via.placeholder.com/900x500?text=No+Image"
-            }
+            image={ad.header_image_url || "https://via.placeholder.com/900x500?text=No+Image"}
             alt={ad.title}
           />
         </Card>
@@ -112,8 +105,8 @@ const Ads_Details = () => {
               gap: 2,
               pb: 1,
               mb: 4,
-              scrollbarWidth: "none", // Firefox
-              "&::-webkit-scrollbar": { display: "none" }, 
+              scrollbarWidth: "none",
+              "&::-webkit-scrollbar": { display: "none" },
             }}
           >
             {ad.images.map((img) => (
@@ -132,7 +125,7 @@ const Ads_Details = () => {
                   component="img"
                   height="100"
                   image={img.image_url}
-                  alt="Extra Image"
+                  alt={`Image ${img.id}`}
                   sx={{ objectFit: "cover" }}
                 />
               </Card>
@@ -140,21 +133,17 @@ const Ads_Details = () => {
           </Box>
         )}
 
-        <Grid container spacing={3}>
-          {/* Left - Ad Info */}
+
+<Grid container spacing={3}>
+          {/* Left - Ad Details */}
           <Grid item xs={12} md={8}>
             <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
               <CardContent>
                 <Typography variant="h5" fontWeight="bold" gutterBottom>
                   {ad.title}
                 </Typography>
-                <Typography
-                  variant="h6"
-                  color="primary"
-                  fontWeight="bold"
-                  gutterBottom
-                >
-                  {ad.currency} {ad.price}
+                <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+                  {ad.currency} {Number(ad.price).toLocaleString()}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2 }}>
                   {ad.description}
@@ -169,47 +158,79 @@ const Ads_Details = () => {
             </Card>
           </Grid>
 
-          {/* Right - Seller Info */}
-          <Grid item xs={12} md={4}>
-            <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
-              <CardContent>
-                <Box display="flex" alignItems="center" mb={2}>
-                  <Avatar
-                    src={ad.user?.avatar_url || ""}
-                    alt={ad.user?.name || "Seller"}
-                    sx={{
-                      width: 60,
-                      height: 60,
-                      mr: 2,
-                      border: "2px solid #eee",
-                    }}
-                  />
-                  <Box>
-                    <Typography fontWeight="bold">
-                      {ad.user?.name || "Unknown Seller"}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                    >
-                      Member since {ad.user?.joined_date || "N/A"}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  sx={{ borderRadius: 2 }}
-                  onClick={() => alert("Contact seller functionality here")}
-                >
-                  Contact Seller
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
+         {/* Right - Seller Info */}
+<Grid item xs={12} md={4}>
+  <Card sx={{ borderRadius: 3, boxShadow: 2 }}>
+    <CardContent>
+      <Box display="flex" alignItems="center" mb={2}>
+        <Avatar
+          src={ad.user_avatar_url || ""}
+          alt={ad.user_first_name || "Seller"}
+          sx={{
+            width: 60,
+            height: 60,
+            mr: 2,
+            border: "2px solid #eee",
+          }}
+        />
+        <Box>
+          <Typography fontWeight="bold">
+            {ad.user_first_name || "Unknown Seller"}
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            Member since {ad.member_since}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Seller Stats */}
+      <Typography variant="body2" sx={{ mb: 1 }}>
+        📦 Total Ads Posted: {ad.total_ads_posted}
+      </Typography>
+      <Typography variant="body2" sx={{ mb: 2 }}>
+        ⭐ Average Rating: {Number(ad.average_rating).toFixed(1) || 0.00} of 5
+      </Typography>
+
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        sx={{ borderRadius: 2 }}
+        onClick={() => setOpen(true)}
+      >
+        Contact Seller
+      </Button>
+    </CardContent>
+  </Card>
+</Grid>
         </Grid>
       </Container>
+
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Login Required</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            You must be logged in to contact the seller.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => (window.location.href = "/login")}
+            color="secondary"
+            variant="outlined"
+          >
+            Register
+          </Button>
+          <Button
+            onClick={() => (window.location.href = "/login")}
+            color="primary"
+            variant="contained"
+          >
+            Login
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </Box>
   );
 };

@@ -21,6 +21,7 @@ import Homepage from "./pages/Homepage";
 // import Favorites from "./pages/Favorites";
 // import Chat from "./pages/Chat";
 import AdsCategories from "./pages/Ads_Categories";
+import AdsByCategory from "./pages/Ads_By_Categories";
 // import AdminPanel from "./pages/AdminPanel";
 // import StaticPage from "./pages/StaticPage";
 import NotFoundPage from "./NotFound"; 
@@ -67,6 +68,7 @@ function App() {
             {/* <Route path="/favorites" element={<Favorites />} /> */}
             {/* <Route path="/chat" element={<Chat />} /> */}
             <Route path="/categories" element={<AdsCategories/>} />
+            <Route path="/categories/:id/:name/ads" element={<AdsByCategory />} />
             {/* <Route path="/admin" element={<AdminPanel />} /> */}
             {/* <Route path="/:staticPage" element={<StaticPage />} /> */}
 

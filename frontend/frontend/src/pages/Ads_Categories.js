@@ -147,6 +147,15 @@ export default function AdsCategories() {
           Ads Categories
         </Typography>
 
+        {/* Description below title */}
+<Typography
+  variant="body1"
+  color="textSecondary"
+  sx={{ mb: 3, maxWidth: 600, mx: "auto", textAlign: "center" }}
+>
+  Explore a wide range of advertising categories to find the perfect ads for your needs. Use the search below to quickly find specific categories.
+</Typography>
+
         {/* Search Bar */}
         <Box
           sx={{
@@ -208,16 +217,16 @@ export default function AdsCategories() {
     </Typography>
   )}
 
-  {filteredCategories.map(({ id, name, icon }) => {
+  {filteredCategories.map(({id, name, icon }) => {
     const IconComponent = iconMap[icon] || CategoryIcon;
-    const cardWidth = 280;  // fixed width for every card
+    const cardWidth = 280;  
     const cardHeight = 300;
 
     return (
       <Grid
         item
         key={id}
-        xs="auto"            // width depends on card, not flex grow
+        xs="auto"        
         sx={{ display: "flex", justifyContent: "center" }}
       >
         <Card
@@ -242,7 +251,7 @@ export default function AdsCategories() {
               boxShadow: "0 8px 20px rgba(106,27,154,0.3)",
             },
           }}
-          onClick={() => navigate(`${API_BASE_URL}/categories/${id}/ads`)}
+          onClick={() => navigate(`/categories/${id}/${encodeURIComponent(name)}/ads`)}
         >
           <Avatar
             sx={{
@@ -279,7 +288,7 @@ export default function AdsCategories() {
               fullWidth
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`${API_BASE_URL}/categories/${id}/ads`);
+                navigate(`/categories/${id}/${encodeURIComponent(name)}/ads`);
               }}
             >
               View Ads

@@ -66,11 +66,34 @@ from rest_framework import generics, permissions
 User = get_user_model()
 
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+@api_view(['POST'])
+def create_users(request):
+    if isinstance(request.data, list):
+        serializer = UserSerializer(data=request.data, many=True)
+    else:
+        serializer = UserSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 @api_view(["GET"])
 def homepage_data(request):
     # Featured ads
     featured_ads = Ad.objects.filter(is_active=True).order_by('-created_at')[:5]
-    featured_ads_data = AdSerializer(featured_ads, many=True).data
+    featured_ads_data = AdsSerializer(featured_ads, many=True).data
 
     # Categories
     categories = Category.objects.all()
@@ -101,7 +124,7 @@ def ads_list(request):
     Retrieve all active ads for Vyzion Ads.
     """
     ads = Ad.objects.filter(is_active=True).order_by('-created_at')
-    serializer = AdSerializer(ads, many=True)
+    serializer = AdsSerializer(ads, many=True)
     return Response(serializer.data)
 
 
@@ -112,7 +135,7 @@ def ad_detail(request, id):
     except Ad.DoesNotExist:
         return Response({"detail": "Ad not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = AdSerializer(ad)
+    serializer = AdsSerializer(ad)
     return Response(serializer.data)
 
 
@@ -147,5 +170,15 @@ def category_ads_list(request, pk):
     except Category.DoesNotExist:
         return Response({'detail': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = AdSerializer(ads, many=True)
+    serializer = AdsSerializer(ads, many=True)
     return Response(serializer.data)
+
+
+
+@api_view(['POST'])
+def create_ads(request):
+    serializer = AdCreateSerializer(data=request.data, many=True)  
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

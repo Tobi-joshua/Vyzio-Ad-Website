@@ -125,7 +125,6 @@ export default function VyzionHomePageAppBar() {
   // Main nav links
   const mainNavLinks = [
     { label: "Home", href: "/" },
-    { label: "Post An Ad", href: "/login" },
     { label: "Categories", href: "/categories" },
   ];
 

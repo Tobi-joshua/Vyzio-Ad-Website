@@ -81,11 +81,13 @@ class Ad(models.Model):
     description = models.TextField()
     city = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, default='USD') 
     is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
 
 
 """ Allows multiple images per ad """
@@ -120,7 +122,8 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    crypto_currency = models.CharField(max_length=20, blank=True, null=True)  # BTC, ETH, USDT
+    crypto_currency = models.CharField(max_length=20, blank=True, null=True)
+    currency = models.CharField(max_length=3, default='USD')  
     crypto_address = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -13,8 +13,6 @@ const DataLoader = ({ visible }) => {
   const isXl = useMediaQuery(theme.breakpoints.only("xl"));
 
   if (!visible) return null;
-
-  // Define loader sizes for each breakpoint (in px)
   let loaderSize;
 
   if (isXs) loaderSize = 200;

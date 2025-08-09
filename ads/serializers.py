@@ -1,17 +1,6 @@
 from rest_framework import serializers
 from .models import *
 
-class AdSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(source='category.name', read_only=True)
-    image = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Ad
-        fields = ['id', 'title', 'price', 'city', 'category', 'image']
-
-
-
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -36,23 +25,33 @@ class AdImageSerializer(serializers.ModelSerializer):
 
 class AdsSerializer(serializers.ModelSerializer):
     images = AdImageSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
 
     class Meta:
         model = Ad
-        fields = ['id', 'title', 'description', 'city', 'price', 'is_active', 'created_at', 'images']
+        fields = [
+            'id', 'title', 'description', 'city', 'price', 'currency',
+            'is_active', 'created_at', 'images', 'category'
+        ]
 
-class CategorySerializer(serializers.ModelSerializer):
+
+class AdCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
-        fields = ['id', 'name', 'icon']
+        model = Ad
+        fields = ['user', 'category', 'title', 'description', 'city', 'price','currency','is_active']
 
-class CategoryWithAdsSerializer(serializers.ModelSerializer):
-    ads = serializers.SerializerMethodField()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Category
-        fields = ['id', 'name', 'icon', 'ads']
+        model = User
+        fields = ['username', 'password', 'email', 'is_advertiser', 'phone', 'country']
 
-    def get_ads(self, obj):
-        ads = Ad.objects.filter(category=obj, is_active=True).order_by('-created_at')
-        return AdsSerializer(ads, many=True).data
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user

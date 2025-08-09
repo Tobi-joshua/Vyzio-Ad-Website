@@ -15,11 +15,27 @@ import base64
 import uuid
 import random
 import string
-
-
-
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from vyzio_backend.settings import IMAGEKIT_API
+from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
+
+# Upload function, which you're already using
+def upload_file_to_imagekit(file_obj, tags):
+    filename = file_obj.name
+    encoded_file = base64.b64encode(file_obj.read()).decode('utf-8')
+    result = IMAGEKIT_API.upload(
+        file=encoded_file,
+        file_name=filename,
+        options=UploadFileRequestOptions(tags=tags)
+    )
+    return {
+        "file_url": result.url,
+        "file_id": getattr(result, "file_id", None),
+        "file_name": filename
+    }
+
+
 
 class User(AbstractUser):
     is_advertiser = models.BooleanField(default=False)
@@ -54,6 +70,42 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+    def save(self, *args, **kwargs):
+        """
+        Only upload to ImageKit when:
+          - new user (no PK), or
+          - no avatar_url yet, or
+          - a real file replaced the default
+        """
+        is_new = self.pk is None
+        should_upload = False
+
+        # Only consider upload if avatar isn't the default placeholder
+        if self.avatar and self.avatar.name != 'https://bit.ly/3YwXaHM':
+            if is_new or not self.avatar_url:
+                should_upload = True
+            else:
+                try:
+                    orig = User.objects.get(pk=self.pk)
+                    if orig.avatar.name != self.avatar.name:
+                        should_upload = True
+                except User.DoesNotExist:
+                    should_upload = True
+
+        if should_upload:
+            try:
+                new_url = upload_file_to_imagekit(self.avatar, tags=["user_avatar"])
+                if new_url:
+                    self.avatar_url = new_url
+            except Exception as e:
+                print(f"Error uploading avatar to ImageKit: {e}")
+
+        super().save(*args, **kwargs)
+
+
+
+
 
 
 
@@ -61,7 +113,8 @@ class User(AbstractUser):
 Allows easy categorization of ads """
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    icon = models.CharField(max_length=100, blank=True)  
+    icon = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -84,9 +137,48 @@ class Ad(models.Model):
     currency = models.CharField(max_length=3, default='USD') 
     is_active = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    header_image = models.ImageField(upload_to='ads/header/', null=True, blank=True)
+    header_image_url = models.URLField(blank=True, null=True)
+    
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        """
+        Upload header_image to ImageKit only when:
+          - instance is new, or
+          - there is no existing header_image_url, or
+          - the header_image file has changed since last save.
+        """
+        is_new = self.pk is None
+        should_upload = False
+
+        if self.header_image:
+            # 1) New record or no URL yet ⇒ upload
+            if is_new or not self.header_image_url:
+                should_upload = True
+            else:
+                # 2) Existing record: compare stored file name vs. current
+                try:
+                    orig = Ad.objects.get(pk=self.pk)
+                    if orig.header_image.name != self.header_image.name:
+                        should_upload = True
+                except Ad.DoesNotExist:
+                    # fallback: upload if something unexpected happened
+                    should_upload = True
+
+        if should_upload:
+            try:
+                result = upload_file_to_imagekit(self.header_image, tags=['ad_header_image'])
+                file_url = result.get('file_url')
+                if file_url:
+                    self.header_image_url = file_url
+            except Exception as e:
+                # log and continue without blocking save
+                print(f"Error uploading header image to ImageKit: {e}")
+
+        super().save(*args, **kwargs)
+    
 
 
 
@@ -94,9 +186,42 @@ class Ad(models.Model):
 class AdImage(models.Model):
     ad = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='ads/extra/')
+    image_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return f"Image for {self.ad.title}"
+    
+    def save(self, *args, **kwargs):
+        """
+        Upload image to ImageKit only when:
+          - instance is new, or
+          - there is no existing image_url, or
+          - the image file has changed since last save.
+        """
+        is_new = self.pk is None
+        should_upload = False
+
+        if self.image:
+            if is_new or not self.image_url:
+                should_upload = True
+            else:
+                try:
+                    orig = AdImage.objects.get(pk=self.pk)
+                    if orig.image.name != self.image.name:
+                        should_upload = True
+                except AdImage.DoesNotExist:
+                    should_upload = True
+
+        if should_upload:
+            try:
+                result = upload_file_to_imagekit(self.image, tags=['ad_images'])
+                file_url = result.get('file_url')
+                if file_url:
+                    self.image_url = file_url
+            except Exception as e:
+                print(f"Error uploading image to ImageKit: {e}")
+
+        super().save(*args, **kwargs)
 
 
 

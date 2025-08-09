@@ -3,7 +3,9 @@ cachetools==5.5.2
 certifi==2025.8.3
 charset-normalizer==3.4.2
 Django==5.2.5
+django-appconf==1.1.0
 django-cors-headers==4.7.0
+django-imagekit==5.0.0
 django-jazzmin==3.0.1
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
@@ -16,8 +18,10 @@ grpc-google-iam-v1==0.14.2
 grpcio==1.74.0
 grpcio-status==1.74.0
 idna==3.10
+imagekitio==4.1.0
 inflection==0.5.1
 packaging==25.0
+pilkit==3.0
 pillow==11.3.0
 proto-plus==1.26.1
 protobuf==6.31.1
@@ -27,7 +31,8 @@ PyJWT==2.10.1
 pytz==2025.2
 PyYAML==6.0.2
 requests==2.32.4
+requests-toolbelt==0.10.1
 rsa==4.9.1
 sqlparse==0.5.3
 uritemplate==4.2.0
-urllib3==2.5.0
+urllib3==1.26.20

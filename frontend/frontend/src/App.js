@@ -22,6 +22,7 @@ import Homepage from "./pages/Homepage";
 // import Chat from "./pages/Chat";
 import AdsCategories from "./pages/Ads_Categories";
 import AdsByCategory from "./pages/Ads_By_Categories";
+import Ads_Details from "./pages/Ads_Details";
 // import AdminPanel from "./pages/AdminPanel";
 // import StaticPage from "./pages/StaticPage";
 import NotFoundPage from "./NotFound"; 
@@ -31,13 +32,12 @@ import Footer from "./components/Footer";
 
 function App() {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-
 
 
   return (
@@ -69,6 +69,7 @@ function App() {
             {/* <Route path="/chat" element={<Chat />} /> */}
             <Route path="/categories" element={<AdsCategories/>} />
             <Route path="/categories/:id/:name/ads" element={<AdsByCategory />} />
+            <Route path="/ads/:id/details" element={<Ads_Details />} />
             {/* <Route path="/admin" element={<AdminPanel />} /> */}
             {/* <Route path="/:staticPage" element={<StaticPage />} /> */}
 

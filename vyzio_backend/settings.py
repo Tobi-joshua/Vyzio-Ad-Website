@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 import sys
+from imagekitio import ImageKit
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,6 +29,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'ads',
     'corsheaders',
+    'imagekit',
 ]
 
 MIDDLEWARE = [
@@ -108,6 +110,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -234,8 +239,14 @@ SIMPLE_JWT = {
     'TOKEN_USER_CLASS': 'rest_framework_simplejwt.serializers.TokenUser',
 }
 
-
-
-
 RECAPTCHA_PUBLIC_KEY = "6LcycH0qAAAAANLqVtapgFnTM47ocV3uFZHU3vwF"
 RECAPTCHA_PRIVATE_KEY = "6LcycH0qAAAAAPLz0epj5PFJHOc5KFoEsHnlOQtW"
+
+IMAGEKIT_PRIVATE_KEY = 'private_WKQr1mx/uKq3FZAOesUumGjKKEc='
+IMAGEKIT_PUBLIC_KEY = 'public_rhpeB8pnhxr6JJL4YMi1bVUc8Vs='
+IMAGEKIT_URL_ENDPOINT = 'https://ik.imagekit.io/ooiob6xdv'
+IMAGEKIT_API = ImageKit(
+    private_key=IMAGEKIT_PRIVATE_KEY,
+    public_key=IMAGEKIT_PUBLIC_KEY,
+    url_endpoint=IMAGEKIT_URL_ENDPOINT
+)

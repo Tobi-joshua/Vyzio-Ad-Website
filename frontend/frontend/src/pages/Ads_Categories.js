@@ -217,87 +217,106 @@ export default function AdsCategories() {
     </Typography>
   )}
 
-  {filteredCategories.map(({id, name, icon }) => {
-    const IconComponent = iconMap[icon] || CategoryIcon;
-    const cardWidth = 280;  
-    const cardHeight = 300;
+  {filteredCategories.map(({ id, name, icon, description }) => {
+  const IconComponent = iconMap[icon] || CategoryIcon;
+  const cardWidth = 280;  
+  const cardHeight = 300;
 
-    return (
-      <Grid
-        item
-        key={id}
-        xs="auto"        
-        sx={{ display: "flex", justifyContent: "center" }}
+  return (
+    <Grid
+      item
+      key={id}
+      xs="auto"
+      sx={{ display: "flex", justifyContent: "center" }}
+    >
+      <Card
+        variant="outlined"
+        sx={{
+          width: cardWidth,
+          height: cardHeight,
+          borderRadius: 3,
+          overflow: "hidden",
+          cursor: "pointer",
+          backgroundColor: "#fff",
+          border: "2px solid",
+          borderColor: "#e0e0e0",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+          transition: "transform 0.2s ease-in-out, border-color 0.2s ease-in-out",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          "&:hover": {
+            transform: "scale(1.03)",
+            borderColor: "#6A1B9A",
+            boxShadow: "0 8px 20px rgba(106,27,154,0.3)",
+          },
+        }}
+        onClick={() => navigate(`/categories/${id}/${encodeURIComponent(name)}/ads`)}
       >
-        <Card
-          variant="outlined"
+        <Avatar
           sx={{
-            width: cardWidth,
-            height: cardHeight,
-            borderRadius: 3,
-            overflow: "hidden",
-            cursor: "pointer",
-            backgroundColor: "#fff",
-            border: "2px solid",
-            borderColor: "#e0e0e0",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-            transition: "transform 0.2s ease-in-out, border-color 0.2s ease-in-out",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            "&:hover": {
-              transform: "scale(1.03)",
-              borderColor: "#6A1B9A",
-              boxShadow: "0 8px 20px rgba(106,27,154,0.3)",
-            },
+            bgcolor: theme.palette.primary.main,
+            width: 64,
+            height: 64,
+            mt: 3,
+            mx: "auto",
           }}
-          onClick={() => navigate(`/categories/${id}/${encodeURIComponent(name)}/ads`)}
         >
-          <Avatar
+          <IconComponent fontSize="large" />
+        </Avatar>
+
+        <CardContent sx={{ flexGrow: 1, px: 3, pt: 2 }}>
+          <Typography
+            variant="h6"
+            component="div"
+            align="center"
+            fontWeight={700}
             sx={{
-              bgcolor: theme.palette.primary.main,
-              width: 64,
-              height: 64,
-              mt: 3,
-              mx: "auto",
+              overflowWrap: "break-word",
+              wordBreak: "break-word",
+              whiteSpace: "normal",
             }}
           >
-            <IconComponent fontSize="large" />
-          </Avatar>
+            {name}
+          </Typography>
 
-          <CardContent sx={{ flexGrow: 1, px: 3, pt: 2 }}>
-            <Typography
-              variant="h6"
-              component="div"
-              align="center"
-              fontWeight={700}
-              sx={{
-                overflowWrap: "break-word",
-                wordBreak: "break-word",
-                whiteSpace: "normal",
-              }}
-            >
-              {name}
-            </Typography>
-          </CardContent>
+          {/* Description text */}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            align="center"
+            sx={{
+              mt: 1,
+              display: "-webkit-box",
+              WebkitLineClamp: 3, 
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              wordBreak: "break-word",
+              maxWidth: "100%",
+            }}
+          >
+            {description}
+          </Typography>
+        </CardContent>
 
-          <CardActions sx={{ px: 3, pb: 2 }}>
-            <Button
-              size="small"
-              variant="contained"
-              fullWidth
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/categories/${id}/${encodeURIComponent(name)}/ads`);
-              }}
-            >
-              View Ads
-            </Button>
-          </CardActions>
-        </Card>
-      </Grid>
-    );
-  })}
+        <CardActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            size="small"
+            variant="contained"
+            fullWidth
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/categories/${id}/${encodeURIComponent(name)}/ads`);
+            }}
+          >
+            View Ads
+          </Button>
+        </CardActions>
+      </Card>
+    </Grid>
+  );
+})}
 </Grid>
       </Container>
       </Box>
